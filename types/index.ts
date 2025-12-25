@@ -46,3 +46,20 @@ export type TDriverStats = {
   parked: number;
   retrieved: number;
 };
+
+export type TDashboardTab = "OVERVIEW" | "APPROVALS";
+
+export type TSiteStats = {
+  ticketsIssuedToday: number;
+  todayCollection: number;
+  totalTickets: number;
+  totalCollection: number | string;
+  activeParking: number;
+};
+
+export type TSite = {
+  id: string;
+  name: string;
+  location: string;
+  stats: TSiteStats;
+};
