@@ -25,3 +25,24 @@ export type TParkingTicket = {
   payment: number;
   status: TTicketStatus;
 };
+
+export type TAssignmentStatus = "RETRIEVE" | "PARK";
+
+export type TAssignment = {
+  vehicleName: string;
+  vehicleNumber: string;
+  status: TAssignmentStatus;
+  customer?: string;
+  parkAt?: string;
+  location?: {
+    name: string;
+    area: string;
+  };
+  assignedAt?: string;
+};
+
+export type TDriverStats = {
+  today: number;
+  parked: number;
+  retrieved: number;
+};

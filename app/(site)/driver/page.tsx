@@ -1,58 +1,15 @@
-type AssignmentStatus = "RETRIEVE" | "PARK";
+import { TAssignment, TDriverStats } from "@/types";
 
-type Assignment = {
-  vehicleName: string;
-  vehicleNumber: string;
-  status: AssignmentStatus;
-  customer?: string;
-  parkAt?: string;
-  location?: {
-    name: string;
-    area: string;
-  };
-  assignedAt?: string;
-};
+import InfoBlock from "./_components/info-block";
+import StatCard from "./_components/stat-card";
 
-type DriverStats = {
-  today: number;
-  parked: number;
-  retrieved: number;
-};
-
-function InfoBlock({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1 rounded-xl p-4">
-      <p className="text-sm text-gray-600">{label}</p>
-      <h3 className="font-semibold">{value}</h3>
-      {sub && <span className="text-sm text-gray-500">{sub}</span>}
-    </div>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="bg-white p-5 flex flex-col gap-1">
-      <span className="text-gray-600">{label}</span>
-      <pre className="text-[#4F39F6]">{value}</pre>
-    </div>
-  );
-}
-
-const newAssignment: Assignment | null = {
+const newAssignment: TAssignment | null = {
   vehicleName: "Maruti Swift",
   vehicleNumber: "MH12CD5678",
   status: "RETRIEVE",
 };
 
-const currentAssignment: Assignment | null = {
+const currentAssignment: TAssignment | null = {
   vehicleName: "Honda City",
   vehicleNumber: "MH02AB1234",
   status: "PARK",
@@ -65,13 +22,13 @@ const currentAssignment: Assignment | null = {
   assignedAt: "09:53 am",
 };
 
-const driverStats: DriverStats = {
+const driverStats: TDriverStats = {
   today: 12,
   parked: 8,
   retrieved: 4,
 };
 
-export default function Driver() {
+export default function DriverPage() {
   return (
     <div className="w-screen bg-linear-180 from-[#EFF4FF] flex justify-center">
       <div className="w-full max-w-160 mx-4 p-4 flex flex-col gap-6 text-lg tracking-wide">
