@@ -1,35 +1,38 @@
 "use client";
 
-import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignOutButton,
+  SignUpButton,
+} from "@clerk/nextjs";
 
 export default function Navbar() {
-  const { sessionClaims } = useAuth();
-  const userRole = sessionClaims?.metadata?.role;
-
-  const navLinks = [
-    { name: "Home", href: "/user" },
-    { name: "Ticket", href: "/user/ticket" },
-    { name: "History", href: "/user/history" },
-    { name: "Settings", href: "/user/settings" },
-  ];
-
   return (
-    <nav className="bg-secondary shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-end items-center h-16 gap-8">
-          {userRole === "user" &&
-            navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-text hover:text-blue-color px-3 py-2 text-sm font-medium transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
+    <nav className="bg-secondary shadow-sm p-2 flex items-center justify-end">
+      <SignedOut>
+        <div className="flex gap-3 justify-center items-center">
+          <SignInButton mode="modal">
+            <button className="border border-accent text-accent hover:bg-primary rounded-md font-medium text-sm px-6 py-2.5 transition-colors">
+              Sign In
+            </button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <button className="bg-accent hover:bg-accent/90 text-secondary rounded-md font-medium text-sm px-6 py-2.5 transition-colors">
+              Sign Up
+            </button>
+          </SignUpButton>
         </div>
-      </div>
+      </SignedOut>
+
+      <SignedIn>
+        <SignOutButton>
+          <button className="bg-[#141E32] hover:bg-accent/90 text-white rounded-md font-medium text-sm px-6 py-2.5 transition-colors">
+            Sign Up
+          </button>
+        </SignOutButton>
+      </SignedIn>
     </nav>
   );
 }
