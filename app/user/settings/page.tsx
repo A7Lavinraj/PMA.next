@@ -1,3 +1,7 @@
+"use client";
+
+import { FormEvent } from "react";
+
 export function SettingsItem({
   title,
   subtitle,
@@ -17,6 +21,13 @@ export function SettingsItem({
 }
 
 export default function UserPageSettingsTab() {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    await fetch("/api/auth/signout", { method: "POST" });
+
+    window.location.replace("/");
+  }
   return (
     <div className="flex flex-col gap-4">
       <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex items-center justify-between">
@@ -27,10 +38,24 @@ export default function UserPageSettingsTab() {
         <span className="text-indigo-500 text-lg">Edit</span>
       </div>
 
-      <SettingsItem title="Manage Vehicles" subtitle="2 vehicles saved" />
-      <SettingsItem title="Transaction History" subtitle="View all payments" />
-      <SettingsItem title="Help & Support" subtitle="Get assistance" />
-      <SettingsItem title="FAQ" subtitle="Frequently Asked Questions" />
+      <div className="flex flex-col gap-4">
+        <SettingsItem title="Manage Vehicles" subtitle="2 vehicles saved" />
+        <SettingsItem
+          title="Transaction History"
+          subtitle="View all payments"
+        />
+        <SettingsItem title="Help & Support" subtitle="Get assistance" />
+        <SettingsItem title="FAQ" subtitle="Frequently Asked Questions" />
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <button
+          type="submit"
+          className="border border-rose-500/20 p-4 rounded-lg text-rose-500 bg-rose-500/10 cursor-pointer w-full"
+        >
+          Sign Out
+        </button>
+      </form>
     </div>
   );
 }
