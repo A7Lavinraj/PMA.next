@@ -1,72 +1,43 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { jwtVerify } from "jose";
 
-const isUserRoute = createRouteMatcher(["/user(.*)"]);
-const isDriverRoute = createRouteMatcher(["/driver(.*)"]);
-const isManagerRoute = createRouteMatcher(["/manager(.*)"]);
-const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
-const isPublicRoute = createRouteMatcher(["/"]);
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-export default clerkMiddleware(async (auth, req) => {
-  const authData = await auth();
-  const userRole = authData.sessionClaims?.metadata?.role;
-  const isAuthenticated = authData.isAuthenticated;
+export default async function middleware(req: NextRequest) {
+  const { pathname, origin } = req.nextUrl;
+  const token = req.cookies.get("__token")?.value;
 
-  // TODO: Should add proper type
-  const getRoleDashboard = (role: any) => {
-    switch (role) {
-      case "user":
-        return "/user";
-      case "driver":
-        return "/driver";
-      case "manager":
-        return "/manager";
-      case "admin":
-        return "/admin";
-      default:
-        return "/";
+  if (!token) {
+    if (pathname === "/") {
+      return NextResponse.next();
     }
-  };
 
-  if (
-    isPublicRoute(req) &&
-    req.nextUrl.pathname === "/" &&
-    isAuthenticated &&
-    userRole
-  ) {
-    const dashboardPath = getRoleDashboard(userRole);
-    const url = new URL(dashboardPath, req.url);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(new URL("/", origin));
   }
 
-  const redirectToRoleDashboard = () => {
-    const redirectPath = getRoleDashboard(userRole);
-    const url = new URL(redirectPath, req.url);
-    return NextResponse.redirect(url);
-  };
+  try {
+    const { payload } = await jwtVerify(token, secret);
 
-  if (isUserRoute(req) && userRole !== "user") {
-    return redirectToRoleDashboard();
+    if (!payload.role || typeof payload.role !== "string") {
+      return NextResponse.redirect(new URL("/", origin));
+    }
+
+    const rolePath = `/${payload.role}`;
+
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL(rolePath, origin));
+    }
+
+    if (!pathname.startsWith(rolePath)) {
+      return NextResponse.redirect(new URL(rolePath, origin));
+    }
+
+    return NextResponse.next();
+  } catch {
+    return NextResponse.redirect(new URL("/", origin));
   }
-
-  if (isDriverRoute(req) && userRole !== "driver") {
-    return redirectToRoleDashboard();
-  }
-
-  if (isManagerRoute(req) && userRole !== "manager") {
-    return redirectToRoleDashboard();
-  }
-
-  if (isAdminRoute(req) && userRole !== "admin") {
-    return redirectToRoleDashboard();
-  }
-
-  return NextResponse.next();
-});
+}
 
 export const config = {
-  matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };
