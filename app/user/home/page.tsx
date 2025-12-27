@@ -1,4 +1,4 @@
-import { RecentParking } from "../recent-parkings";
+import { RecentParking } from "../_components/recent-parkings";
 
 export default function UserPageHomeTab() {
   return (
