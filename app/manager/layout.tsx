@@ -1,6 +1,6 @@
 import Navbar from "../_components/navbar";
 
-export default function UserLayout({
+export default function ManagerLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -10,19 +10,11 @@ export default function UserLayout({
       routes={[
         {
           name: "Home",
-          href: "/user/home",
-        },
-        {
-          name: "Tickets",
-          href: "/user/tickets",
-        },
-        {
-          name: "History",
-          href: "/user/history",
+          href: "/manager/home",
         },
         {
           name: "Settings",
-          href: "/user/settings",
+          href: "/manager/settings",
         },
       ]}
     >

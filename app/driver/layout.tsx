@@ -1,6 +1,6 @@
 import Navbar from "../_components/navbar";
 
-export default function UserLayout({
+export default function DriverLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -10,19 +10,11 @@ export default function UserLayout({
       routes={[
         {
           name: "Home",
-          href: "/user/home",
-        },
-        {
-          name: "Tickets",
-          href: "/user/tickets",
-        },
-        {
-          name: "History",
-          href: "/user/history",
+          href: "/driver/home",
         },
         {
           name: "Settings",
-          href: "/user/settings",
+          href: "/driver/settings",
         },
       ]}
     >
