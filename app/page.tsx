@@ -24,12 +24,7 @@ export default function AuthPage() {
 
   return (
     <div className="flex min-h-screen">
-      <div className="hidden md:flex md:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative z-10 flex flex-col justify-center items-center text-white p-12"></div>
-      </div>
-
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white mx-auto">
         <div className="w-full max-w-md">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">

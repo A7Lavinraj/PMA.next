@@ -1,5 +1,5 @@
 {
-  "name": "parking-management-app",
+  "name": "PMA.next",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx database/seed.ts"
+    "db:seed": "tsx database/seed.ts",
+    "deloy": "build && db:migrate && db:seed"
   },
   "dependencies": {
     "@types/bcrypt": "^6.0.0",

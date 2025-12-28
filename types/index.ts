@@ -62,9 +62,10 @@ export type Vehicle = {
 export type TAssignmentStatus = "RETRIEVE" | "PARK";
 
 export type TAssignment = {
+  id: number;
   vehicleName: string;
   vehicleNumber: string;
-  status: TAssignmentStatus;
+  status: "PARK" | "RETRIEVE";
   customer?: string;
   parkAt?: string;
   location?: {

@@ -1,46 +1,7 @@
 "use client";
 
 import { TSite } from "@/types";
-import { useState } from "react";
-
-const SITES: TSite[] = [
-  {
-    id: "phoenix",
-    name: "Pheonix Mall - Lower Parel",
-    location: "Lower Parel, Mumbai",
-    stats: {
-      ticketsIssuedToday: 87,
-      todayCollection: 13050,
-      totalTickets: 1247,
-      totalCollection: "186,450",
-      activeParking: 45,
-    },
-  },
-  {
-    id: "inorbit",
-    name: "Inorbit Mall - Malad",
-    location: "Malad, Mumbai",
-    stats: {
-      ticketsIssuedToday: 64,
-      todayCollection: 9840,
-      totalTickets: 980,
-      totalCollection: "142,300",
-      activeParking: 32,
-    },
-  },
-  {
-    id: "infiniti",
-    name: "Infiniti Mall - Andheri",
-    location: "Andheri, Mumbai",
-    stats: {
-      ticketsIssuedToday: 102,
-      todayCollection: 15750,
-      totalTickets: 1630,
-      totalCollection: "214,900",
-      activeParking: 58,
-    },
-  },
-];
+import { useState, useEffect } from "react";
 
 function PerformanceCard({ label, value }: { label: string; value: number }) {
   return (
@@ -61,8 +22,75 @@ function StatRow({ label, value }: { label: string; value: number | string }) {
 }
 
 export default function OverviewsPage() {
-  const [selectedSiteId, setSelectedSiteId] = useState(SITES[0].id);
-  const selectedSite = SITES.find((s) => s.id === selectedSiteId)!;
+  const [sites, setSites] = useState<TSite[]>([]);
+  const [selectedSiteId, setSelectedSiteId] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchSites();
+  }, []);
+
+  async function fetchSites() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin-overviews", {
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to fetch sites");
+      }
+
+      setSites(data.data || []);
+      if (data.data.length > 0) {
+        setSelectedSiteId(data.data[0].id);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to load sites");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center">
+          <p className="mt-4 text-gray-600">Loading sites...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+        <p className="text-red-700 mb-4">{error}</p>
+        <button
+          onClick={fetchSites}
+          className="bg-[#8200DB] text-white px-6 py-2 rounded-xl font-medium hover:opacity-90"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (sites.length === 0) {
+    return (
+      <div className="bg-white border-2 border-gray-200 rounded-xl p-12 text-center">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          No Sites Found
+        </h3>
+        <p className="text-gray-600">Add locations to see statistics</p>
+      </div>
+    );
+  }
+
+  const selectedSite = sites.find((s) => s.id === selectedSiteId)!;
 
   return (
     <div className="flex flex-col gap-4">
@@ -73,7 +101,7 @@ export default function OverviewsPage() {
           value={selectedSiteId}
           onChange={(e) => setSelectedSiteId(e.target.value)}
         >
-          {SITES.map((site) => (
+          {sites.map((site) => (
             <option key={site.id} value={site.id}>
               {site.name}
             </option>
@@ -115,6 +143,13 @@ export default function OverviewsPage() {
         <p>{selectedSite.name}</p>
         <span className="text-neutral-600">{selectedSite.location}</span>
       </div>
+
+      <button
+        onClick={fetchSites}
+        className="w-full py-3 rounded-xl border-2 border-[#E5E7EB] bg-white hover:bg-gray-50 transition-colors"
+      >
+        Refresh Data
+      </button>
     </div>
   );
 }

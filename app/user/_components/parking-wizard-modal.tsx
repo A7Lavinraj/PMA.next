@@ -90,8 +90,6 @@ export default function ParkingWizardModal({
       <div className="bg-white w-full max-w-md rounded-2xl p-6 space-y-6 max-h-[90vh] overflow-y-auto">
         {step === "vehicle-selection" && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Select Your Vehicle</h3>
-
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
                 {error}
@@ -103,31 +101,34 @@ export default function ParkingWizardModal({
                 Loading vehicles...
               </div>
             ) : vehicles.length > 0 ? (
-              <ul className="space-y-2 max-h-64 overflow-y-auto">
-                {vehicles.map((v) => (
-                  <li key={v.id}>
-                    <button
-                      className="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-                      onClick={() => {
-                        setSelectedVehicle(v);
-                        setStep("ticket-confirm");
-                      }}
-                    >
-                      <div className="font-medium">
-                        {v.brand} {v.model}
-                      </div>
-                      <div className="text-sm text-gray-600">{v.plate}</div>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <h3 className="text-lg font-semibold">Select Your Vehicle</h3>
+                <ul className="space-y-2 max-h-64 overflow-y-auto">
+                  {vehicles.map((v) => (
+                    <li key={v.id}>
+                      <button
+                        className="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          setSelectedVehicle(v);
+                          setStep("ticket-confirm");
+                        }}
+                      >
+                        <div className="font-medium">
+                          {v.brand} {v.model}
+                        </div>
+                        <div className="text-sm text-gray-600">{v.plate}</div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : (
               <p className="text-sm text-gray-600 text-center py-4">
                 No vehicles registered. Add one below.
               </p>
             )}
 
-            <div className="border-t pt-4">
+            <div className="pt-4">
               <h4 className="font-medium text-sm mb-3">Add New Vehicle</h4>
               <NewVehicleForm
                 onSubmitAction={handleRegisterVehicle}

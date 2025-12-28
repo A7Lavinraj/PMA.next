@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { tickets, payments } from "@/database/schema";
+import { tickets, payments, assignments } from "@/database/schema";
 import { jwtVerify } from "jose";
 
 async function getUserId(req: NextRequest): Promise<number | null> {
@@ -24,7 +24,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  console.log(userId);
   try {
     const userTickets = await db.query.tickets.findMany({
       where: (t, { eq }) => eq(t.customerId, userId),
@@ -59,6 +58,35 @@ export async function GET(req: NextRequest) {
       { status: 500 },
     );
   }
+}
+
+async function getAvailableValet(): Promise<number | null> {
+  const valets = await db.query.users.findMany({
+    where: (users, { eq }) => eq(users.role, "driver"),
+  });
+
+  if (valets.length === 0) {
+    return null;
+  }
+
+  const valetWorkload = await Promise.all(
+    valets.map(async (valet) => {
+      const activeAssignments = await db.query.assignments.findMany({
+        where: (assignments, { and, eq, isNull }) =>
+          and(
+            eq(assignments.valetId, valet.id),
+            isNull(assignments.unassignedAt),
+          ),
+      });
+      return {
+        valetId: valet.id,
+        activeCount: activeAssignments.length,
+      };
+    }),
+  );
+
+  valetWorkload.sort((a, b) => a.activeCount - b.activeCount);
+  return valetWorkload[0].valetId;
 }
 
 export async function POST(req: NextRequest) {
@@ -97,6 +125,17 @@ export async function POST(req: NextRequest) {
       amount,
       status: "pending",
     });
+
+    const valetId = await getAvailableValet();
+
+    if (valetId) {
+      await db.insert(assignments).values({
+        ticketId: ticket.id,
+        valetId: valetId,
+      });
+    } else {
+      console.warn("No valets available to assign ticket:", ticket.id);
+    }
 
     return NextResponse.json({
       success: true,
