@@ -51,11 +51,15 @@ export const users = pgTable("users", {
 
 export const vehicles = pgTable("vehicles", {
   id: serial("id").primaryKey(),
-
   brand: varchar("brand", { length: 255 }).notNull(),
   model: varchar("model", { length: 255 }).notNull(),
-
   plate: varchar("plate", { length: 20 }).notNull().unique(),
+  customerId: integer("customer_id")
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export const locations = pgTable("locations", {
@@ -138,12 +142,16 @@ export const usersRelations = relations(users, ({ many }) => ({
   tickets: many(tickets, {
     relationName: "customerTickets",
   }),
-
   valetAssignments: many(assignments),
+  vehicles: many(vehicles),
 }));
 
-export const vehiclesRelations = relations(vehicles, ({ many }) => ({
+export const vehiclesRelations = relations(vehicles, ({ one, many }) => ({
   tickets: many(tickets),
+  customer: one(users, {
+    fields: [vehicles.customerId],
+    references: [users.id],
+  }),
 }));
 
 export const locationsRelations = relations(locations, ({ many }) => ({

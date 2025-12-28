@@ -26,6 +26,39 @@ export type TParkingTicket = {
   status: TTicketStatus;
 };
 
+export type TicketPreview = {
+  location: {
+    id: number;
+    name: string;
+    address: string;
+  };
+  pricing: {
+    base: number;
+    serviceFee: number;
+    gst: number;
+  };
+};
+
+export type QRData = {
+  location: {
+    id: number;
+    name: string;
+    address: string;
+  };
+  pricing: {
+    base: number;
+    serviceFee: number;
+    gst: number;
+  };
+};
+
+export type Vehicle = {
+  id: number;
+  brand: string;
+  model: string;
+  plate: string;
+};
+
 export type TAssignmentStatus = "RETRIEVE" | "PARK";
 
 export type TAssignment = {
