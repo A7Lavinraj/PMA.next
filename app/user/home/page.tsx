@@ -64,7 +64,7 @@ export default function UserHomePage() {
         },
         () => {},
       );
-    } catch (err: any) {
+    } catch (err) {
       console.error("Scanner error:", err);
       setError(
         err.message || "Failed to start camera. Please check permissions.",

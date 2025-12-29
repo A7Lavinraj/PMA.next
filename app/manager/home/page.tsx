@@ -47,7 +47,7 @@ export default function ManagerPage() {
       setStats(
         data.stats || { active: 0, retrieving: 0, today: 0, revenue: 0 },
       );
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || "Failed to load assignments");
     } finally {
       setLoading(false);
@@ -122,7 +122,7 @@ export default function ManagerPage() {
           ].map((f) => (
             <button
               key={f.key}
-              onClick={() => setFilter(f.key as any)}
+              onClick={() => setFilter(f.key)}
               className={`px-4 py-2 rounded-xl text-sm border whitespace-nowrap transition-colors
                 ${
                   filter === f.key

@@ -1,11 +1,11 @@
 import { TParkingTicket, TTicketStatus } from "@/types";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 export function useTicketFilter(tickets: TParkingTicket[]) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"ALL" | TTicketStatus>("ALL");
 
-  const filteredTickets = useMemo(() => {
+  function filteredTickets() {
     return tickets.filter((ticket) => {
       const matchesSearch =
         ticket.plate.toLowerCase().includes(search.toLowerCase()) ||
@@ -16,7 +16,7 @@ export function useTicketFilter(tickets: TParkingTicket[]) {
 
       return matchesSearch && matchesFilter;
     });
-  }, [search, filter]);
+  }
 
   const stats = {
     active: tickets.filter((t) => t.status === "PARKED").length,

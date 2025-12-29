@@ -40,7 +40,7 @@ export default function ParkingWizardModal({
       } else {
         throw new Error(data.error || "Failed to fetch vehicles");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Fetch vehicles error:", err);
       setError(err.message || "Failed to load vehicles");
     } finally {
@@ -68,7 +68,7 @@ export default function ParkingWizardModal({
       setVehicles([...vehicles, newVehicle]);
       setSelectedVehicle(newVehicle);
       setStep("ticket-confirm");
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || "Failed to register vehicle");
     } finally {
       setLoading(false);

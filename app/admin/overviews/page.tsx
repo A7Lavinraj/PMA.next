@@ -48,7 +48,7 @@ export default function OverviewsPage() {
       if (data.data.length > 0) {
         setSelectedSiteId(data.data[0].id);
       }
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || "Failed to load sites");
     } finally {
       setLoading(false);
@@ -110,7 +110,7 @@ export default function OverviewsPage() {
       </div>
 
       <div className="w-full flex flex-col gap-2">
-        <p>Today's Performance</p>
+        <p>Today&apos;s Performance</p>
         <div className="flex gap-4">
           <PerformanceCard
             label="Tickets Issued"

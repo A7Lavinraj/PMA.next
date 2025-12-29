@@ -38,7 +38,7 @@ export default function DriverPage() {
       setNewAssignment(data.data.newAssignment);
       setCurrentAssignment(data.data.currentAssignment);
       setDriverStats(data.data.stats);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || "Failed to load driver data");
     } finally {
       setLoading(false);
@@ -65,7 +65,7 @@ export default function DriverPage() {
       }
 
       await fetchDriverData();
-    } catch (err: any) {
+    } catch (err) {
       alert(err.message || "Failed to complete assignment");
     } finally {
       setCompleting(false);
@@ -195,7 +195,7 @@ export default function DriverPage() {
               No Active Assignments
             </h3>
             <p className="text-gray-600 mb-6">
-              You'll see new assignments here when they're available
+              You&apos;ll see new assignments here when they&apos;re available
             </p>
             <button
               onClick={fetchDriverData}
