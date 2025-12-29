@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     });
 
     return res;
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
 
     return NextResponse.json(

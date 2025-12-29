@@ -53,7 +53,7 @@ export async function GET() {
       success: true,
       data: sitesWithStats,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Fetch sites error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch sites" },

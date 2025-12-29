@@ -47,7 +47,7 @@ export default function TicketConfirmModal({
       }
 
       onSuccess?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Ticket creation error:", error);
       setError(error.message || "Failed to create ticket");
       setLoading(false);

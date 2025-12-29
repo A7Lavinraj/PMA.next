@@ -32,8 +32,8 @@ export async function GET(req: NextRequest) {
       .where(eq(vehicles.customerId, userId));
 
     return NextResponse.json({ success: true, data: userVehicles });
-  } catch (err) {
-    console.error("Fetch vehicles error:", err);
+  } catch (error: any) {
+    console.error("Fetch vehicles error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch vehicles" },
       { status: 500 },
@@ -75,8 +75,8 @@ export async function POST(req: NextRequest) {
       { success: true, data: newVehicle },
       { status: 201 },
     );
-  } catch (err) {
-    console.error("Create vehicle error:", err);
+  } catch (error: any) {
+    console.error("Create vehicle error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create vehicle" },
       { status: 500 },

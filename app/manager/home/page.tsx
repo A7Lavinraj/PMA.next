@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TParkingTicket } from "@/types";
+import { TParkingTicket, TTicketStatus } from "@/types";
 import { useTicketFilter } from "../_hooks/use-ticket-filter";
 import ParkingTicketCard from "../_components/parking-ticket-card";
 
@@ -11,6 +11,8 @@ type Stats = {
   today: number;
   revenue: number;
 };
+
+type TicketFilter = TTicketStatus | "ALL";
 
 export default function ManagerPage() {
   const [tickets, setTickets] = useState<TParkingTicket[]>([]);
@@ -47,21 +49,32 @@ export default function ManagerPage() {
       setStats(
         data.stats || { active: 0, retrieving: 0, today: 0, revenue: 0 },
       );
-    } catch (err) {
-      setError(err.message || "Failed to load assignments");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Failed to load assignments");
+      }
     } finally {
       setLoading(false);
     }
   }
+
+  const FILTERS: { key: TicketFilter; label: string }[] = [
+    { key: "ALL", label: `All (${tickets.length})` },
+    { key: "PARKED", label: "Parked" },
+    { key: "RETRIEVING", label: "Retrieving" },
+    { key: "RETRIEVED", label: "Retrieved" },
+  ];
+
+  const visibleTickets = filteredTickets();
 
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center">
         <div className="w-full max-w-xl px-4 py-6">
           <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <p className="mt-4 text-gray-600">Loading assignments...</p>
-            </div>
+            <p className="mt-4 text-gray-600">Loading assignments...</p>
           </div>
         </div>
       </div>
@@ -114,12 +127,7 @@ export default function ManagerPage() {
         />
 
         <div className="flex gap-2 overflow-x-auto">
-          {[
-            { key: "ALL", label: `All (${tickets.length})` },
-            { key: "PARKED", label: "Parked" },
-            { key: "RETRIEVING", label: "Retrieving" },
-            { key: "RETRIEVED", label: "Retrieved" },
-          ].map((f) => (
+          {FILTERS.map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
@@ -135,7 +143,7 @@ export default function ManagerPage() {
           ))}
         </div>
 
-        {filteredTickets.length === 0 ? (
+        {visibleTickets.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No Assignments Found
@@ -148,7 +156,7 @@ export default function ManagerPage() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {filteredTickets.map((ticket) => (
+            {visibleTickets.map((ticket) => (
               <ParkingTicketCard key={ticket.id} ticket={ticket} />
             ))}
           </div>

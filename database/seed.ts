@@ -106,7 +106,7 @@ async function main() {
     });
 
     process.exit(0);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error seeding database:", error);
     process.exit(1);
   }

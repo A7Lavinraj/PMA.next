@@ -17,7 +17,7 @@ export default function AuthPage() {
       });
 
       window.location.replace("/");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
     }
   }

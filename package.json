@@ -11,7 +11,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx database/seed.ts",
-    "deloy": "build && db:migrate && db:seed"
+    "deploy": "build && db:migrate && db:seed"
   },
   "dependencies": {
     "@types/bcrypt": "^6.0.0",

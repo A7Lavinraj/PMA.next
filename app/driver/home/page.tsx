@@ -38,8 +38,8 @@ export default function DriverPage() {
       setNewAssignment(data.data.newAssignment);
       setCurrentAssignment(data.data.currentAssignment);
       setDriverStats(data.data.stats);
-    } catch (err) {
-      setError(err.message || "Failed to load driver data");
+    } catch (error: any) {
+      setError(error.message || "Failed to load driver data");
     } finally {
       setLoading(false);
     }
@@ -65,8 +65,8 @@ export default function DriverPage() {
       }
 
       await fetchDriverData();
-    } catch (err) {
-      alert(err.message || "Failed to complete assignment");
+    } catch (error: any) {
+      alert(error.message || "Failed to complete assignment");
     } finally {
       setCompleting(false);
     }

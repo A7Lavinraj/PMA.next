@@ -11,7 +11,7 @@ export async function GET() {
       success: true,
       data: users,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
 
     return NextResponse.json(
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const [newUser] = await db.insert(users).values(body).returning();
 
     return NextResponse.json({ success: true, data: newUser }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
 
     return NextResponse.json(
@@ -59,7 +59,7 @@ export async function PATCH(req: NextRequest) {
       success: true,
       data: updatedUser,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
 
     return NextResponse.json(

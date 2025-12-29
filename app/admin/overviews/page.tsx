@@ -48,7 +48,7 @@ export default function OverviewsPage() {
       if (data.data.length > 0) {
         setSelectedSiteId(data.data[0].id);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || "Failed to load sites");
     } finally {
       setLoading(false);

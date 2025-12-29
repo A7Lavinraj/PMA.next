@@ -25,8 +25,8 @@ export default function UserHomePage() {
     if (scannerRef.current) {
       try {
         await scannerRef.current.stop();
-      } catch (err) {
-        console.error("Error stopping scanner:", err);
+      } catch (error: any) {
+        console.error("Error stopping scanner:", error);
       }
       scannerRef.current = null;
     }
@@ -57,17 +57,17 @@ export default function UserHomePage() {
 
             await stopScan();
             setQrData(data);
-          } catch (err) {
-            console.error("Invalid QR data", err);
+          } catch (error: any) {
+            console.error("Invalid QR data", error);
             setError("Invalid QR code. Please try again.");
           }
         },
         () => {},
       );
-    } catch (err) {
-      console.error("Scanner error:", err);
+    } catch (error: any) {
+      console.error("Scanner error:", error);
       setError(
-        err.message || "Failed to start camera. Please check permissions.",
+        error.message || "Failed to start camera. Please check permissions.",
       );
       setScanning(false);
       scannerRef.current = null;

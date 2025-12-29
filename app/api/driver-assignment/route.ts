@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
         stats: stats,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Fetch driver assignments error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch assignments" },
@@ -170,7 +170,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message: "Assignment completed",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Complete assignment error:", error);
     return NextResponse.json(
       { error: "Failed to complete assignment" },

@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
       success: true,
       data: userTickets,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch tickets" },
@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
       success: true,
       data: ticket,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Ticket creation error:", error);
 
     return NextResponse.json(
