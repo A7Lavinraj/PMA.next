@@ -5,6 +5,15 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 export default async function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
+
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
+
+  if (req.method !== "GET") {
+    return NextResponse.next();
+  }
+
   const token = req.cookies.get("__token")?.value;
 
   if (!token) {
@@ -39,5 +48,7 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: [
+    "/((?!api|_next|favicon.ico|.*\\.).*)",
+  ],
 };
