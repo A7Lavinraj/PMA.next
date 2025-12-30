@@ -4,21 +4,43 @@ import { FormEvent, useState } from "react";
 
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement> & { target: HTMLFormElement },
   ) {
     event.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const payload = Object.fromEntries(new FormData(event.target));
+
+    if (isSignUp && payload.password !== payload.confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      await fetch("/api/auth", {
+      const res = await fetch("/api/auth", {
         method: "POST",
-        body: JSON.stringify(Object.fromEntries(new FormData(event.target))),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || "Authentication failed");
+      }
+
       window.location.replace("/");
-    } catch (error: any) {
-      console.error(error);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -32,9 +54,15 @@ export default function AuthPage() {
             </h2>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-6 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             {isSignUp && (
-              <div className="mb-6">
+              <div>
                 <label
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-700 mb-2"
@@ -45,14 +73,15 @@ export default function AuthPage() {
                   type="text"
                   id="name"
                   name="name"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="John Doe"
                   required
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
+                  placeholder="John Doe"
                 />
               </div>
             )}
 
-            <div className="mb-6">
+            <div>
               <label
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -63,13 +92,14 @@ export default function AuthPage() {
                 type="email"
                 id="email"
                 name="email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                placeholder="you@example.com"
                 required
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
+                placeholder="you@example.com"
               />
             </div>
 
-            <div className="mb-6">
+            <div>
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -80,15 +110,16 @@ export default function AuthPage() {
                 type="password"
                 id="password"
                 name="password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                placeholder="••••••••"
                 required
                 minLength={8}
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
+                placeholder="••••••••"
               />
             </div>
 
             {isSignUp && (
-              <div className="mb-6">
+              <div>
                 <label
                   htmlFor="confirmPassword"
                   className="block text-sm font-medium text-gray-700 mb-2"
@@ -99,18 +130,23 @@ export default function AuthPage() {
                   type="password"
                   id="confirmPassword"
                   name="confirmPassword"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="••••••••"
                   required
                   minLength={8}
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
+                  placeholder="••••••••"
                 />
               </div>
             )}
 
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition mb-6"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 bg-black text-white py-3 px-4 rounded-lg font-medium disabled:opacity-60 disabled:cursor-not-allowed"
             >
+              {loading && (
+                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              )}
               {isSignUp ? "Sign Up" : "Sign In"}
             </button>
           </form>
@@ -119,8 +155,9 @@ export default function AuthPage() {
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               type="button"
+              disabled={loading}
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50"
             >
               {isSignUp ? "Sign In" : "Sign Up"}
             </button>
