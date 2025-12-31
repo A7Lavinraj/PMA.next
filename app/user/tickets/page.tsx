@@ -63,8 +63,6 @@ export default function TicketsPage() {
     return <div className="p-6 text-gray-500">No tickets found</div>;
   }
 
-  console.log(tickets);
-
   return (
     <div className="flex flex-col gap-4">
       <h2 className="font-medium text-gray-800">My Parking Tickets</h2>

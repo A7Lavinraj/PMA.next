@@ -13,17 +13,22 @@ export type TTicketStatus = "PARKED" | "RETRIEVING" | "RETRIEVED";
 
 export type TParkingTicket = {
   id: string;
+  assignmentId?: number;
   vehicle: string;
   plate: string;
   customer: string;
   valet: string;
   valetId: string;
+  valetIdNumeric?: number;
   location: string;
   area: string;
   entryTime: string;
   duration: string;
   payment: number;
-  status: TTicketStatus;
+  status: "PARKED" | "RETRIEVING" | "RETRIEVED";
+  paymentStatus?: "pending" | "paid" | "failed";
+  assignedAt: Date | string;
+  unassignedAt?: Date | string | null;
 };
 
 export type TicketPreview = {

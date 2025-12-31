@@ -44,8 +44,6 @@ export async function GET(req: NextRequest) {
         },
       },
     });
-    console.log(await db.query.tickets.findMany());
-    console.log(userTickets);
 
     return NextResponse.json({
       success: true,

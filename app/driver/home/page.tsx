@@ -46,7 +46,6 @@ export default function DriverPage() {
   }
 
   async function completeAssignment() {
-    console.log(currentAssignment);
     if (!currentAssignment?.id || completing) return;
 
     setCompleting(true);

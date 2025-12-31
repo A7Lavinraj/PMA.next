@@ -14,6 +14,11 @@ type Stats = {
 
 type TicketFilter = TTicketStatus | "ALL";
 
+type Driver = {
+  id: number;
+  name: string;
+};
+
 export default function ManagerPage() {
   const [tickets, setTickets] = useState<TParkingTicket[]>([]);
   const [stats, setStats] = useState<Stats>({
@@ -26,6 +31,9 @@ export default function ManagerPage() {
   const [error, setError] = useState<string | null>(null);
   const [showDriverForm, setShowDriverForm] = useState(false);
   const [creatingDriver, setCreatingDriver] = useState(false);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [reassigningTicket, setReassigningTicket] = useState<string | null>(null);
+  const [reassigning, setReassigning] = useState(false);
   const [driverForm, setDriverForm] = useState({
     name: "",
     email: "",
@@ -40,7 +48,21 @@ export default function ManagerPage() {
 
   useEffect(() => {
     fetchAssignments();
+    fetchDrivers();
   }, []);
+
+  async function fetchDrivers() {
+    try {
+      const res = await fetch("/api/user", { credentials: "include" });
+      const data = await res.json();
+      if (res.ok) {
+        const driverUsers = data.data.filter((u: any) => u.role === "driver");
+        setDrivers(driverUsers);
+      }
+    } catch (err) {
+      console.error("Failed to fetch drivers:", err);
+    }
+  }
 
   async function fetchAssignments() {
     setLoading(true);
@@ -97,11 +119,37 @@ export default function ManagerPage() {
         drivingLicenseNumber: "",
         role: "driver",
       });
+      await fetchDrivers();
       alert("Driver created successfully!");
     } catch (err: any) {
       alert(err.message || "Failed to create driver");
     } finally {
       setCreatingDriver(false);
+    }
+  }
+
+  async function handleReassignValet(assignmentId: number, newValetId: number) {
+    setReassigning(true);
+    try {
+      const res = await fetch("/api/manager-assignment", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assignmentId, newValetId }),
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to reassign valet");
+      }
+
+      setReassigningTicket(null);
+      await fetchAssignments();
+    } catch (err: any) {
+      alert(err.message || "Failed to reassign valet");
+    } finally {
+      setReassigning(false);
     }
   }
 
@@ -212,7 +260,35 @@ export default function ManagerPage() {
         ) : (
           <div className="grid gap-4">
             {visibleTickets.map((ticket) => (
-              <ParkingTicketCard key={ticket.id} ticket={ticket} />
+              <div key={ticket.id}>
+                <ParkingTicketCard ticket={ticket} />
+                {ticket.assignmentId && (
+                  <div className="mt-2 bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={reassigningTicket === ticket.id ? "" : ticket.valetIdNumeric || ""}
+                        onChange={(e) => {
+                          const newValetId = parseInt(e.target.value);
+                          if (newValetId && ticket.assignmentId) {
+                            handleReassignValet(ticket.assignmentId, newValetId);
+                          }
+                        }}
+                        disabled={reassigning}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                      >
+                        <option value="">Reassign to...</option>
+                        {drivers
+                          .filter((d) => d.id !== ticket.valetIdNumeric)
+                          .map((driver) => (
+                            <option key={driver.id} value={driver.id}>
+                              {driver.name}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         )}

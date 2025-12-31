@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
+import { assignments } from "@/database/schema";
+import { eq } from "drizzle-orm"
 
 export async function GET() {
   try {
@@ -38,11 +40,13 @@ export async function GET() {
 
       return {
         id: `PKG-${ticket.id}`,
+        assignmentId: assignment.id,
         vehicle: `${ticket.vehicle.brand} ${ticket.vehicle.model}`,
         plate: ticket.vehicle.plate,
         customer: ticket.customer.name,
         valet: assignment.valet.name,
         valetId: `V${String(assignment.valet.id).padStart(3, "0")}`,
+        valetIdNumeric: assignment.valet.id,
         location: ticket.location.name,
         area: ticket.location.address,
         entryTime: formattedEntryTime,
@@ -80,7 +84,37 @@ export async function GET() {
     console.error("Fetch assignments error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch assignments" },
-      { status: 500 },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { assignmentId, newValetId } = body;
+
+    if (!assignmentId || !newValetId) {
+      return NextResponse.json(
+        { error: "Assignment ID and new valet ID required" },
+        { status: 400 }
+      );
+    }
+
+    await db
+      .update(assignments)
+      .set({ valetId: newValetId })
+      .where(eq(assignments.id, assignmentId));
+
+    return NextResponse.json({
+      success: true,
+      message: "Valet reassigned successfully",
+    });
+  } catch (error) {
+    console.error("Reassign valet error:", error);
+    return NextResponse.json(
+      { error: "Failed to reassign valet" },
+      { status: 500 }
     );
   }
 }
